@@ -17,6 +17,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "services:up": "docker compose -f up-infra/dev-compose.yaml up -d",
+    "services:stop": "docker compose -f up-infra/dev-compose.yaml down",
+    "services:wait:database": "node up-infra/scripts/wait-for-database.js",
     "migrations:create": "node up-infra/scripts/create-migration.js",
     "migrations:up": "typeorm migration:run -d src/database/migrations.config.ts"
   },
