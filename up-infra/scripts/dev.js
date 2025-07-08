@@ -3,6 +3,8 @@ const { spawn } = require('node:child_process');
 let servicesProcess;
 let nestProcess;
 
+process.env.NODE_ENV = 'development';
+
 const runCommand = (command, args, callback) => {
   const process = spawn(command, args, { stdio: 'inherit', shell: true });
 
