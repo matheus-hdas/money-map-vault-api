@@ -22,7 +22,8 @@
     "services:wait:database": "node up-infra/scripts/wait-for-database.js",
     "migrations:create": "node up-infra/scripts/create-migration.js",
     "migrations:compile": "npx tsc src/database/migrations/*.ts --outDir dist/database/migrations --target es2017 --module commonjs",
-    "migrations:up": "npm run migrations:compile && typeorm migration:run -d src/database/migrations.config.js"
+    "db:migrate": "typeorm migration:run -d up-infra/data-source.js",
+    "db:seed": "typeorm-extension seed:run -d up-infra/data-source.js"
   },
   "dependencies": {
     "@nestjs/common": "11.0.1",
@@ -34,7 +35,8 @@
     "pg": "8.16.3",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.1",
-    "typeorm": "0.3.25"
+    "typeorm": "0.3.25",
+    "typeorm-extension": "^3.7.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.2.0",
