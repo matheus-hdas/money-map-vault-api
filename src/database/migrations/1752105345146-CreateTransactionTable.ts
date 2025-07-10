@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateTransactionTable1752105345146 implements MigrationInterface {
+  name = 'CreateTransactionTable1752105345146';
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TYPE "transaction_type_enum" AS ENUM('income', 'expense', 'transfer')

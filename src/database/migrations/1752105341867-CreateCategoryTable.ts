@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateCategoryTable1752105341867 implements MigrationInterface {
+  name = 'CreateCategoryTable1752105341867';
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TYPE "category_type_enum" AS ENUM('income', 'expense', 'transfer')

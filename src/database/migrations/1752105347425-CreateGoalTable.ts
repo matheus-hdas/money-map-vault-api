@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateGoalTable1752105347425 implements MigrationInterface {
+  name = 'CreateGoalTable1752105347425';
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TYPE "goal_type_enum" AS ENUM('savings', 'debt_payment', 'spending_limit', 'investment')

@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateBudgetTable1752105349185 implements MigrationInterface {
+  name = 'CreateBudgetTable1752105349185';
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             CREATE TYPE "budget_period_enum" AS ENUM('weekly', 'monthly', 'quarterly', 'yearly')
