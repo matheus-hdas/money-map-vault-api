@@ -21,7 +21,8 @@
     "services:stop": "docker compose -f up-infra/dev-compose.yaml down",
     "services:wait:database": "node up-infra/scripts/wait-for-database.js",
     "migrations:create": "node up-infra/scripts/create-migration.js",
-    "migrations:up": "typeorm migration:run -d src/database/migrations.config.js"
+    "migrations:compile": "npx tsc src/database/migrations/*.ts --outDir dist/database/migrations --target es2017 --module commonjs",
+    "migrations:up": "npm run migrations:compile && typeorm migration:run -d src/database/migrations.config.js"
   },
   "dependencies": {
     "@nestjs/common": "11.0.1",
