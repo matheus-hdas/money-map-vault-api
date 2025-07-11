@@ -32,7 +32,7 @@ const runDev = () => {
     runCommand('pnpm', ['run', 'services:wait:database'], (code) => {
       if (code !== 0) return;
 
-      runCommand('pnpm', ['run', 'migrations:up'], (code) => {
+      runCommand('pnpm', ['run', 'db:migrate'], (code) => {
         if (code !== 0) return;
 
         nestProcess = runCommand(
