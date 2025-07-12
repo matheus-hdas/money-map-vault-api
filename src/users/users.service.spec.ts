@@ -36,6 +36,7 @@ describe('UsersService', () => {
     findAndCount: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
+    delete: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -385,6 +386,27 @@ describe('UsersService', () => {
       await expect(service.update(username, updateUserRequest)).rejects.toThrow(
         new BadRequestException('username already in use'),
       );
+    });
+  });
+
+  describe('delete', () => {
+    it('should throw NotFoundException when user not found', async () => {
+      const username = 'nonexistent';
+      mockRepository.findOne.mockResolvedValue(null);
+      await expect(service.delete(username)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should delete user successfully', async () => {
+      const username = 'testuser';
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockRepository.delete.mockResolvedValue(undefined);
+
+      const result = await service.delete(username);
+
+      expect(result).toEqual({
+        success: true,
+        message: 'User deleted successfully',
+      });
     });
   });
 });
