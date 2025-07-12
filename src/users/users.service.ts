@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,12 +13,15 @@ import {
   UserPagedResponse,
   UserResponse,
 } from './user.dto';
+import { PasswordService } from 'src/password/password.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
+    @Inject(PasswordService)
+    private readonly passwordService: PasswordService,
   ) {}
 
   async findAll(page: number, limit: number): Promise<UserPagedResponse> {
@@ -47,7 +51,12 @@ export class UsersService {
       username: user.username,
     });
 
-    const newUser = await this.repository.save(user);
+    const hashedPassword = await this.passwordService.hash(user.password);
+
+    const newUser = await this.repository.save({
+      ...user,
+      password: hashedPassword,
+    });
 
     return this.toResponse(newUser);
   }
@@ -65,6 +74,11 @@ export class UsersService {
       email: user.email,
       username: user.username,
     });
+
+    if (user.password) {
+      const hashedPassword = await this.passwordService.hash(user.password);
+      user.password = hashedPassword;
+    }
 
     const updatedUser = await this.repository.save({
       ...existingUser,
