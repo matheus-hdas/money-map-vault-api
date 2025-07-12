@@ -74,6 +74,23 @@ export class UsersService {
     return this.toResponse(updatedUser);
   }
 
+  async delete(username: string) {
+    const existingUser = await this.repository.findOne({
+      where: { username },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.repository.delete(existingUser.id);
+
+    return {
+      success: true,
+      message: 'User deleted successfully',
+    };
+  }
+
   private toResponse(user: User): UserResponse {
     return {
       id: user.id,
