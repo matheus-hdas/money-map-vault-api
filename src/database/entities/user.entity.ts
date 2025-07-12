@@ -19,10 +19,7 @@ export class User {
   id: string;
 
   @Column({ type: 'varchar', length: 100 })
-  firstName: string;
-
-  @Column({ type: 'varchar', length: 100 })
-  lastName: string;
+  username: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
@@ -44,30 +41,6 @@ export class User {
 
   @Column({ type: 'varchar', length: 50, default: 'America/Sao_Paulo' })
   timezone: string;
-
-  @Column({ type: 'boolean', default: true })
-  emailNotifications: boolean;
-
-  @Column({ type: 'boolean', default: false })
-  isEmailVerified: boolean;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  emailVerificationToken: string;
-
-  @Column({ type: 'timestamp', nullable: true })
-  emailVerifiedAt: Date;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  passwordResetToken: string;
-
-  @Column({ type: 'timestamp', nullable: true })
-  passwordResetExpiresAt: Date;
-
-  @Column({ type: 'timestamp', nullable: true })
-  lastLoginAt: Date;
-
-  @Column({ type: 'boolean', default: true })
-  isActive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

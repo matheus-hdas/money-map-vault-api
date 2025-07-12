@@ -5,10 +5,10 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            CREATE INDEX "IDX_users_email" ON "users" ("email")
+            CREATE INDEX "IDX_users_username" ON "users" ("username")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_users_isActive" ON "users" ("isActive")
+            CREATE INDEX "IDX_users_email" ON "users" ("email")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_users_createdAt" ON "users" ("createdAt")
@@ -195,7 +195,7 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "IDX_accounts_user_id"`);
 
     await queryRunner.query(`DROP INDEX "IDX_users_createdAt"`);
-    await queryRunner.query(`DROP INDEX "IDX_users_isActive"`);
     await queryRunner.query(`DROP INDEX "IDX_users_email"`);
+    await queryRunner.query(`DROP INDEX "IDX_users_username"`);
   }
 }
