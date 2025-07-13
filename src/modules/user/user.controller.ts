@@ -9,14 +9,14 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { CreateUserRequest, UpdateUserRequest } from './user.dto';
 
 @Controller('api/v1/users')
-export class UsersController {
+export class UserController {
   constructor(
-    @Inject(UsersService)
-    private readonly usersService: UsersService,
+    @Inject(UserService)
+    private readonly userService: UserService,
   ) {}
 
   @Get()
@@ -24,17 +24,17 @@ export class UsersController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.usersService.findAll(page, limit);
+    return this.userService.findAll(page, limit);
   }
 
   @Get(':username')
   async findByUsername(@Param('username') username: string) {
-    return this.usersService.findByUsername(username);
+    return this.userService.findByUsername(username);
   }
 
   @Post()
   async create(@Body() user: CreateUserRequest) {
-    return this.usersService.create(user);
+    return this.userService.create(user);
   }
 
   @Patch(':username')
@@ -42,11 +42,11 @@ export class UsersController {
     @Param('username') username: string,
     @Body() user: UpdateUserRequest,
   ) {
-    return await this.usersService.update(username, user);
+    return await this.userService.update(username, user);
   }
 
   @Delete(':username')
   async delete(@Param('username') username: string) {
-    return this.usersService.delete(username);
+    return this.userService.delete(username);
   }
 }

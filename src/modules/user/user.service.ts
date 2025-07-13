@@ -13,10 +13,10 @@ import {
   UserPagedResponse,
   UserResponse,
 } from './user.dto';
-import { PasswordService } from 'src/password/password.service';
+import { PasswordService } from '../../services/password/password.service';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
