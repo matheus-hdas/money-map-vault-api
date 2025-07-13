@@ -6,12 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../database/entities/user.entity';
-import {
-  CreateUserRequest,
-  UpdateUserRequest,
-  UserPagedResponse,
-  UserResponse,
-} from './user.dto';
+import { CreateUserRequest, UpdateUserRequest } from './user.dto';
 import { PasswordService } from '../../services/password/password.service';
 
 @Injectable()
@@ -22,16 +17,16 @@ export class UserService {
     private readonly passwordService: PasswordService,
   ) {}
 
-  async findAll(page: number, limit: number): Promise<UserPagedResponse> {
+  async findAll(page: number, limit: number) {
     const [users, total] = await this.repository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    return this.toPagedResponse(users, total, page, limit);
+    return { users, total };
   }
 
-  async findByUsername(username: string): Promise<UserResponse> {
+  async findByUsername(username: string): Promise<User> {
     const user = await this.repository.findOne({
       where: { username },
     });
@@ -40,10 +35,10 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    return this.toResponse(user);
+    return user;
   }
 
-  async create(user: CreateUserRequest): Promise<UserResponse> {
+  async create(user: CreateUserRequest): Promise<User> {
     await this.validateUniqueFields({
       email: user.email,
       username: user.username,
@@ -56,10 +51,10 @@ export class UserService {
       password: hashedPassword,
     });
 
-    return this.toResponse(newUser);
+    return newUser;
   }
 
-  async update(username: string, user: UpdateUserRequest) {
+  async update(username: string, user: UpdateUserRequest): Promise<User> {
     const existingUser = await this.repository.findOne({
       where: { username },
     });
@@ -83,7 +78,7 @@ export class UserService {
       ...user,
     });
 
-    return this.toResponse(updatedUser);
+    return updatedUser;
   }
 
   async delete(username: string) {
@@ -100,36 +95,6 @@ export class UserService {
     return {
       success: true,
       message: 'User deleted successfully',
-    };
-  }
-
-  private toResponse(user: User): UserResponse {
-    return {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      locale: user.locale,
-      timezone: user.timezone,
-      defaultCurrency: user.defaultCurrency,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
-  }
-
-  private toPagedResponse(
-    users: User[],
-    total: number,
-    page: number,
-    limit: number,
-  ): UserPagedResponse {
-    return {
-      success: true,
-      data: users.map((user) => this.toResponse(user)),
-      meta: {
-        total,
-        page,
-        limit,
-      },
     };
   }
 

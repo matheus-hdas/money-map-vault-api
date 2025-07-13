@@ -9,7 +9,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserRequest, UpdateUserRequest } from './user.dto';
+import {
+  CreateUserRequest,
+  UpdateUserRequest,
+  UserPagedResponse,
+  UserResponse,
+} from './user.dto';
+import { User } from '../database/entities/user.entity';
 
 @Controller('api/v1/users')
 export class UserController {
@@ -20,17 +26,20 @@ export class UserController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.userService.findAll(page, limit);
+    const { users, total } = await this.userService.findAll(page, limit);
+    return this.toPagedResponse(users, total, page, limit);
   }
 
   @Get(':username')
   async findByUsername(@Param('username') username: string) {
-    return this.userService.findByUsername(username);
+    const userFound = await this.userService.findByUsername(username);
+    return this.toResponse(userFound);
   }
 
   @Post()
   async create(@Body() user: CreateUserRequest) {
-    return this.userService.create(user);
+    const newUser = await this.userService.create(user);
+    return this.toResponse(newUser);
   }
 
   @Patch(':username')
@@ -38,11 +47,42 @@ export class UserController {
     @Param('username') username: string,
     @Body() user: UpdateUserRequest,
   ) {
-    return await this.userService.update(username, user);
+    const updatedUser = await this.userService.update(username, user);
+    return this.toResponse(updatedUser);
   }
 
   @Delete(':username')
   async delete(@Param('username') username: string) {
     return this.userService.delete(username);
+  }
+
+  private toResponse(user: User): UserResponse {
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      locale: user.locale,
+      timezone: user.timezone,
+      defaultCurrency: user.defaultCurrency,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  private toPagedResponse(
+    users: User[],
+    total: number,
+    page: number,
+    limit: number,
+  ): UserPagedResponse {
+    return {
+      success: true,
+      data: users.map((user) => this.toResponse(user)),
+      meta: {
+        total,
+        page,
+        limit,
+      },
+    };
   }
 }
