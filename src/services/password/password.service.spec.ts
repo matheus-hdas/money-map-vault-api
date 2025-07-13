@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PasswordService } from './password.service';
 import * as bcrypt from 'bcrypt';
 
-// Mock do bcrypt
 jest.mock('bcrypt', () => ({
   hash: jest.fn(),
   compare: jest.fn(),
@@ -23,7 +22,6 @@ describe('PasswordService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    // Reset NODE_ENV após cada teste
     delete process.env.NODE_ENV;
   });
 
@@ -41,7 +39,7 @@ describe('PasswordService', () => {
       const result = await service.hash(password);
 
       expect(result).toBe(hashedPassword);
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1); // default rounds
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1);
       expect(mockBcrypt.hash).toHaveBeenCalledTimes(1);
     });
 
@@ -55,7 +53,7 @@ describe('PasswordService', () => {
       const result = await service.hash(password);
 
       expect(result).toBe(hashedPassword);
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 14); // production rounds
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 14);
       expect(mockBcrypt.hash).toHaveBeenCalledTimes(1);
     });
 
@@ -69,7 +67,7 @@ describe('PasswordService', () => {
       const result = await service.hash(password);
 
       expect(result).toBe(hashedPassword);
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1); // default rounds
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1);
       expect(mockBcrypt.hash).toHaveBeenCalledTimes(1);
     });
 
@@ -83,7 +81,7 @@ describe('PasswordService', () => {
       const result = await service.hash(password);
 
       expect(result).toBe(hashedPassword);
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1); // default rounds
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1);
       expect(mockBcrypt.hash).toHaveBeenCalledTimes(1);
     });
 
@@ -115,7 +113,7 @@ describe('PasswordService', () => {
       const password = 'testPassword123';
       const error = new Error('Bcrypt hash failed');
 
-      mockBcrypt.hash.mockRejectedValue(error);
+      mockBcrypt.hash.mockRejectedValue(error as never);
 
       await expect(service.hash(password)).rejects.toThrow(error);
       expect(mockBcrypt.hash).toHaveBeenCalledWith(password, 1);
@@ -190,7 +188,7 @@ describe('PasswordService', () => {
       const hash = 'hashedPassword123';
       const error = new Error('Bcrypt compare failed');
 
-      mockBcrypt.compare.mockRejectedValue(error);
+      mockBcrypt.compare.mockRejectedValue(error as never);
 
       await expect(service.compare(password, hash)).rejects.toThrow(error);
       expect(mockBcrypt.compare).toHaveBeenCalledWith(password, hash);
@@ -264,9 +262,7 @@ describe('PasswordService', () => {
       const password = 'testPassword123';
       const hashedPassword = 'hashedPassword123';
 
-      // Mock hash
       mockBcrypt.hash.mockResolvedValue(hashedPassword as never);
-      // Mock compare to return true
       mockBcrypt.compare.mockResolvedValue(true as never);
 
       const hash = await service.hash(password);
@@ -283,9 +279,7 @@ describe('PasswordService', () => {
       const password2 = 'differentPassword456';
       const hashedPassword1 = 'hashedPassword123';
 
-      // Mock hash
       mockBcrypt.hash.mockResolvedValue(hashedPassword1 as never);
-      // Mock compare to return false for different passwords
       mockBcrypt.compare.mockResolvedValue(false as never);
 
       const hash = await service.hash(password1);
