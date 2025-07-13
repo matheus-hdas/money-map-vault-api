@@ -15,11 +15,6 @@ export class PasswordService {
   }
 
   private getRoundsByEnvironment(): number {
-    const environment = process.env.NODE_ENV;
-    if (environment === 'production') {
-      return 14;
-    }
-
-    return 1;
+    return process.env.NODE_ENV === 'production' ? 14 : 1;
   }
 }

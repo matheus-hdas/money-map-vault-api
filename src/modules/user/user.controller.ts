@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Patch,
   Post,
@@ -14,10 +13,7 @@ import { CreateUserRequest, UpdateUserRequest } from './user.dto';
 
 @Controller('api/v1/users')
 export class UserController {
-  constructor(
-    @Inject(UserService)
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async findAll(

@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,7 +19,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
-    @Inject(PasswordService)
     private readonly passwordService: PasswordService,
   ) {}
 
