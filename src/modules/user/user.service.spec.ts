@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../database/entities/user.entity';
-import { CreateUserRequest, UpdateUserRequest, UserResponse } from './user.dto';
+import { CreateUserRequest, UpdateUserRequest } from './user.dto';
 import { PasswordService } from '../../services/password/password.service';
 
 describe('UserService', () => {
@@ -15,17 +15,6 @@ describe('UserService', () => {
     email: 'test@example.com',
     password: 'hashedPassword123',
     dateOfBirth: new Date('1990-01-01'),
-    locale: 'pt-BR',
-    timezone: 'America/Sao_Paulo',
-    defaultCurrency: 'BRL',
-    createdAt: new Date('2023-01-01'),
-    updatedAt: new Date('2023-01-01'),
-  };
-
-  const mockUserResponse: UserResponse = {
-    id: '1',
-    username: 'testuser',
-    email: 'test@example.com',
     locale: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     defaultCurrency: 'BRL',
@@ -72,7 +61,7 @@ describe('UserService', () => {
   });
 
   describe('findAll', () => {
-    it('should return paginated users', async () => {
+    it('should return users and total', async () => {
       const page = 1;
       const limit = 10;
       const total = 1;
@@ -83,13 +72,8 @@ describe('UserService', () => {
       const result = await service.findAll(page, limit);
 
       expect(result).toEqual({
-        success: true,
-        data: [mockUserResponse],
-        meta: {
-          total,
-          page,
-          limit,
-        },
+        users,
+        total,
       });
       expect(mockRepository.findAndCount).toHaveBeenCalledWith({
         skip: (page - 1) * limit,
@@ -108,13 +92,8 @@ describe('UserService', () => {
       const result = await service.findAll(page, limit);
 
       expect(result).toEqual({
-        success: true,
-        data: [],
-        meta: {
-          total,
-          page,
-          limit,
-        },
+        users: [],
+        total: 0,
       });
       expect(mockRepository.findAndCount).toHaveBeenCalledWith({
         skip: (page - 1) * limit,
@@ -132,10 +111,9 @@ describe('UserService', () => {
 
       const result = await service.findAll(page, limit);
 
-      expect(result.meta).toEqual({
+      expect(result).toEqual({
+        users,
         total,
-        page,
-        limit,
       });
       expect(mockRepository.findAndCount).toHaveBeenCalledWith({
         skip: (page - 1) * limit, // skip 5 items
@@ -151,7 +129,7 @@ describe('UserService', () => {
 
       const result = await service.findByUsername(username);
 
-      expect(result).toEqual(mockUserResponse);
+      expect(result).toEqual(mockUser);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { username },
       });
@@ -187,13 +165,6 @@ describe('UserService', () => {
         password: hashedPassword,
       };
 
-      const expectedResponse: UserResponse = {
-        ...mockUserResponse,
-        id: '2',
-        username: 'newuser',
-        email: 'newuser@example.com',
-      };
-
       // Mock para validateUniqueFields - não encontra usuário existente
       mockRepository.findOne.mockResolvedValue(null);
       mockPasswordService.hash.mockResolvedValue(hashedPassword);
@@ -201,7 +172,7 @@ describe('UserService', () => {
 
       const result = await service.create(createUserRequest);
 
-      expect(result).toEqual(expectedResponse);
+      expect(result).toEqual(newUser);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: [
           { email: createUserRequest.email },
@@ -324,15 +295,6 @@ describe('UserService', () => {
         updatedAt: new Date('2023-01-02'),
       };
 
-      const expectedResponse: UserResponse = {
-        ...mockUserResponse,
-        email: 'updated@example.com',
-        locale: 'en-US',
-        timezone: 'America/New_York',
-        defaultCurrency: 'USD',
-        updatedAt: new Date('2023-01-02'),
-      };
-
       // Mock para encontrar usuário existente
       mockRepository.findOne.mockResolvedValueOnce(mockUser);
       // Mock para validateUniqueFields - não encontra conflito
@@ -341,7 +303,7 @@ describe('UserService', () => {
 
       const result = await service.update(username, updateUserRequest);
 
-      expect(result).toEqual(expectedResponse);
+      expect(result).toEqual(updatedUser);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { username },
       });
@@ -367,12 +329,6 @@ describe('UserService', () => {
         updatedAt: new Date('2023-01-02'),
       };
 
-      const expectedResponse: UserResponse = {
-        ...mockUserResponse,
-        email: 'updated@example.com',
-        updatedAt: new Date('2023-01-02'),
-      };
-
       mockRepository.findOne.mockResolvedValueOnce(mockUser);
       mockRepository.findOne.mockResolvedValueOnce(null);
       mockPasswordService.hash.mockResolvedValue(hashedPassword);
@@ -380,7 +336,7 @@ describe('UserService', () => {
 
       const result = await service.update(username, updateUserRequest);
 
-      expect(result).toEqual(expectedResponse);
+      expect(result).toEqual(updatedUser);
       expect(mockPasswordService.hash).toHaveBeenCalledWith('newPassword123');
       expect(mockRepository.save).toHaveBeenCalledWith({
         ...mockUser,
@@ -401,19 +357,13 @@ describe('UserService', () => {
         updatedAt: new Date('2023-01-02'),
       };
 
-      const expectedResponse: UserResponse = {
-        ...mockUserResponse,
-        email: 'updated@example.com',
-        updatedAt: new Date('2023-01-02'),
-      };
-
       mockRepository.findOne.mockResolvedValueOnce(mockUser);
       mockRepository.findOne.mockResolvedValueOnce(null);
       mockRepository.save.mockResolvedValue(updatedUser);
 
       const result = await service.update(username, updateUserRequest);
 
-      expect(result).toEqual(expectedResponse);
+      expect(result).toEqual(updatedUser);
     });
 
     it('should throw NotFoundException when user not found', async () => {
