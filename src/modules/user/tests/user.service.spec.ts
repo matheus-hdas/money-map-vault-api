@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UserService } from './user.service';
-import { User } from '../database/entities/user.entity';
-import { CreateUserRequest, UpdateUserRequest } from './user.dto';
-import { PasswordService } from '../../services/password/password.service';
+import { UserService } from '../user.service';
+import { User } from '../../database/entities/user.entity';
+import { CreateUserRequest, UpdateUserRequest } from '../user.dto';
+import { PasswordService } from '../../../services/password/password.service';
 
 describe('UserService', () => {
   let service: UserService;
