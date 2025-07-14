@@ -65,4 +65,8 @@ export class AuthService {
       expiration: token.expiration,
     };
   }
+
+  verifyToken(token: string) {
+    return this.tokenService.verifyToken(token);
+  }
 }
