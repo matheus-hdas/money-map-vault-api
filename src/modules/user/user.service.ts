@@ -38,6 +38,18 @@ export class UserService {
     return user;
   }
 
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.repository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
   async create(user: CreateUserRequest): Promise<User> {
     await this.validateUniqueFields({
       email: user.email,
