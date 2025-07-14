@@ -6,7 +6,7 @@ import {
 import { UserService } from '../user/user.service';
 import { TokenService } from '../../services/token/token.service';
 import { LoginRequest } from './auth.dto';
-import { PasswordService } from 'src/services/password/password.service';
+import { PasswordService } from '../../services/password/password.service';
 import { User } from '../database/entities/user.entity';
 
 @Injectable()

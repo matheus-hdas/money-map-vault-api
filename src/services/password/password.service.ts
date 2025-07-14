@@ -4,14 +4,11 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class PasswordService {
   async hash(password: string): Promise<string> {
-    return (await bcrypt.hash(
-      password,
-      this.getRoundsByEnvironment(),
-    )) as string;
+    return await bcrypt.hash(password, this.getRoundsByEnvironment());
   }
 
   async compare(password: string, hash: string): Promise<boolean> {
-    return (await bcrypt.compare(password, hash)) as boolean;
+    return await bcrypt.compare(password, hash);
   }
 
   private getRoundsByEnvironment(): number {
