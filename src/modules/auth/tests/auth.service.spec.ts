@@ -4,7 +4,7 @@ import { AuthService } from '../auth.service';
 import { UserService } from '../../user/user.service';
 import { TokenService } from '../../../services/token/token.service';
 import { PasswordService } from '../../../services/password/password.service';
-import { LoginRequest } from '../auth.dto';
+import { LoginRequest, RegisterRequest } from '../auth.dto';
 import { User } from '../../database/entities/user.entity';
 
 describe('AuthService', () => {
@@ -31,6 +31,7 @@ describe('AuthService', () => {
 
   const mockUserService = {
     findByEmail: jest.fn(),
+    create: jest.fn(),
   };
 
   const mockTokenService = {
@@ -70,6 +71,103 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('register', () => {
+    const mockRegisterRequest: RegisterRequest = {
+      username: 'testuser',
+      email: 'test@example.com',
+      password: 'password123',
+      locale: 'pt-BR',
+      timezone: 'America/Sao_Paulo',
+      defaultCurrency: 'BRL',
+    };
+
+    it('should register user successfully', async () => {
+      const mockCreatedUser = {
+        ...mockUser,
+        emailVerified: false,
+      };
+
+      mockUserService.create.mockResolvedValue(mockCreatedUser);
+
+      const result = await service.register(mockRegisterRequest);
+
+      expect(result).toEqual(mockCreatedUser);
+      expect(mockUserService.create).toHaveBeenCalledWith(mockRegisterRequest);
+    });
+
+    it('should handle user creation errors', async () => {
+      const creationError = new Error('Database error');
+      mockUserService.create.mockRejectedValue(creationError);
+
+      await expect(service.register(mockRegisterRequest)).rejects.toThrow(
+        creationError,
+      );
+
+      expect(mockUserService.create).toHaveBeenCalledWith(mockRegisterRequest);
+    });
+
+    it('should register user with optional fields', async () => {
+      const minimalRegisterRequest: RegisterRequest = {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockCreatedUser = {
+        ...mockUser,
+        emailVerified: false,
+      };
+
+      mockUserService.create.mockResolvedValue(mockCreatedUser);
+
+      const result = await service.register(minimalRegisterRequest);
+
+      expect(result).toEqual(mockCreatedUser);
+      expect(mockUserService.create).toHaveBeenCalledWith(
+        minimalRegisterRequest,
+      );
+    });
+
+    it('should register user with custom locale and timezone', async () => {
+      const customRegisterRequest: RegisterRequest = {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+        locale: 'en-US',
+        timezone: 'America/New_York',
+        defaultCurrency: 'USD',
+      };
+
+      const mockCreatedUser = {
+        ...mockUser,
+        locale: 'en-US',
+        timezone: 'America/New_York',
+        defaultCurrency: 'USD',
+        emailVerified: false,
+      };
+
+      mockUserService.create.mockResolvedValue(mockCreatedUser);
+
+      const result = await service.register(customRegisterRequest);
+
+      expect(result).toEqual(mockCreatedUser);
+      expect(mockUserService.create).toHaveBeenCalledWith(
+        customRegisterRequest,
+      );
+    });
+
+    it('should handle validation errors from UserService', async () => {
+      const validationError = new Error('Email already exists');
+      mockUserService.create.mockRejectedValue(validationError);
+
+      await expect(service.register(mockRegisterRequest)).rejects.toThrow(
+        validationError,
+      );
+
+      expect(mockUserService.create).toHaveBeenCalledWith(mockRegisterRequest);
+    });
   });
 
   describe('login', () => {

@@ -4,7 +4,6 @@ import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
 import { User } from '../../database/entities/user.entity';
 import {
-  CreateUserRequest,
   UpdateUserRequest,
   UserResponse,
   UserPagedResponse,
@@ -181,66 +180,6 @@ describe('UserController', () => {
 
       await expect(controller.findByUsername(username)).rejects.toThrow(error);
       expect(mockUserService.findByUsername).toHaveBeenCalledWith(username);
-    });
-  });
-
-  describe('create', () => {
-    it('should create user successfully', async () => {
-      const createUserRequest: CreateUserRequest = {
-        username: 'newuser',
-        email: 'newuser@example.com',
-        password: 'password123',
-      };
-
-      const newUser: User = {
-        ...mockUser,
-        id: '2',
-        username: 'newuser',
-        email: 'newuser@example.com',
-      };
-
-      const expectedResponse: UserResponse = {
-        ...expectedUserResponse,
-        id: '2',
-        username: 'newuser',
-        email: 'newuser@example.com',
-      };
-
-      mockUserService.create.mockResolvedValue(newUser);
-
-      const result = await controller.create(createUserRequest);
-
-      expect(result).toEqual(expectedResponse);
-      expect(mockUserService.create).toHaveBeenCalledWith(createUserRequest);
-      expect(mockUserService.create).toHaveBeenCalledTimes(1);
-    });
-
-    it('should handle validation errors from service', async () => {
-      const createUserRequest: CreateUserRequest = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-
-      const error = new Error('Username already exists');
-      mockUserService.create.mockRejectedValue(error);
-
-      await expect(controller.create(createUserRequest)).rejects.toThrow(error);
-      expect(mockUserService.create).toHaveBeenCalledWith(createUserRequest);
-    });
-
-    it('should handle service errors during creation', async () => {
-      const createUserRequest: CreateUserRequest = {
-        username: 'newuser',
-        email: 'newuser@example.com',
-        password: 'password123',
-      };
-
-      const error = new Error('Database connection failed');
-      mockUserService.create.mockRejectedValue(error);
-
-      await expect(controller.create(createUserRequest)).rejects.toThrow(error);
-      expect(mockUserService.create).toHaveBeenCalledWith(createUserRequest);
     });
   });
 

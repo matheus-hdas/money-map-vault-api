@@ -5,16 +5,10 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import {
-  CreateUserRequest,
-  UpdateUserRequest,
-  UserPagedResponse,
-  UserResponse,
-} from './user.dto';
+import { UpdateUserRequest, UserPagedResponse, UserResponse } from './user.dto';
 import { User } from '../database/entities/user.entity';
 
 @Controller('api/v1/users')
@@ -34,12 +28,6 @@ export class UserController {
   async findByUsername(@Param('username') username: string) {
     const userFound = await this.userService.findByUsername(username);
     return this.toResponse(userFound);
-  }
-
-  @Post()
-  async create(@Body() user: CreateUserRequest) {
-    const newUser = await this.userService.create(user);
-    return this.toResponse(newUser);
   }
 
   @Patch(':username')

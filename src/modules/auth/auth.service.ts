@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { TokenService } from '../../services/token/token.service';
-import { LoginRequest } from './auth.dto';
+import { LoginRequest, RegisterRequest } from './auth.dto';
 import { PasswordService } from '../../services/password/password.service';
 import { User } from '../database/entities/user.entity';
 
@@ -16,6 +16,11 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly passwordService: PasswordService,
   ) {}
+
+  async register(registerRequest: RegisterRequest) {
+    const newUser = await this.userService.create(registerRequest);
+    return newUser;
+  }
 
   async login(loginRequest: LoginRequest) {
     let user: User;
