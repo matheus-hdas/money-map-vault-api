@@ -11,7 +11,13 @@ if (!migrationName) {
   process.exit(1);
 }
 
-const migrationPath = path.join('src', 'database', 'migrations', migrationName);
+const migrationPath = path.join(
+  'src',
+  'modules',
+  'database',
+  'migrations',
+  migrationName,
+);
 
 try {
   execSync(`typeorm migration:create ${migrationPath}`, { stdio: 'inherit' });

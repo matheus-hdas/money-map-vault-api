@@ -27,11 +27,13 @@ const dataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [path.join(__dirname, '../src/database/entities/*.entity.ts')],
-  migrations: [path.join(__dirname, '../src/database/migrations/*.ts')],
-  seeds: [path.join(__dirname, '../src/database/seeds/**/*.seeder.ts')],
+  entities: [
+    path.join(__dirname, '../src/modules/database/entities/*.entity.ts'),
+  ],
+  migrations: [path.join(__dirname, '../src/modules/database/migrations/*.ts')],
+  seeds: [path.join(__dirname, '../src/modules/database/seeds/**/*.seeder.ts')],
   factories: [
-    path.join(__dirname, '../src/database/factories/**/*.factory.ts'),
+    path.join(__dirname, '../src/modules/database/factories/**/*.factory.ts'),
   ],
   synchronize: false,
   logging: ['migration'],

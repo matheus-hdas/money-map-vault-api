@@ -25,6 +25,16 @@ services:
     networks:
       - moneymapvault-network
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: moneymapvault-mailhog
+    restart: unless-stopped
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    networks:
+      - moneymapvault-network
+
 volumes:
   postgres_data:
   redis_data:
