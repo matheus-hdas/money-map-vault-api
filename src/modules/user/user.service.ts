@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../database/entities/user.entity';
-import { CreateUserRequest, UpdateUserRequest } from './user.dto';
+import { CreateUserRequest, UpdateUserInternalRequest } from './user.dto';
 import { PasswordService } from '../../services/password/password.service';
 
 @Injectable()
@@ -50,6 +50,18 @@ export class UserService {
     return user;
   }
 
+  async findByVerificationToken(token: string): Promise<User> {
+    const user = await this.repository.findOne({
+      where: { emailVerificationToken: token },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
   async create(user: CreateUserRequest): Promise<User> {
     await this.validateUniqueFields({
       email: user.email,
@@ -66,7 +78,10 @@ export class UserService {
     return newUser;
   }
 
-  async update(username: string, user: UpdateUserRequest): Promise<User> {
+  async update(
+    username: string,
+    user: UpdateUserInternalRequest,
+  ): Promise<User> {
     const existingUser = await this.repository.findOne({
       where: { username },
     });
@@ -117,18 +132,32 @@ export class UserService {
     email?: string;
     username?: string;
   }): Promise<void> {
+    // Não faz validação se nenhum campo foi fornecido
+    if (!email && !username) {
+      return;
+    }
+
+    // Constrói as condições de busca dinamicamente
+    const whereConditions: any[] = [];
+    if (email) {
+      whereConditions.push({ email });
+    }
+    if (username) {
+      whereConditions.push({ username });
+    }
+
     const existingUser = await this.repository.findOne({
-      where: [{ email }, { username }],
+      where: whereConditions,
     });
 
     const duplicateFields: string[] = [];
 
     if (existingUser) {
-      if (existingUser.email === email) {
+      if (email && existingUser.email === email) {
         duplicateFields.push('email');
       }
 
-      if (existingUser.username === username) {
+      if (username && existingUser.username === username) {
         duplicateFields.push('username');
       }
     }
