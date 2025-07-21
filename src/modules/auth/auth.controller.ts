@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequest, RegisterRequest } from './auth.dto';
 import { UserResponse } from '../user/user.dto';
@@ -10,8 +10,18 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerRequest: RegisterRequest) {
-    const newUser = await this.authService.register(registerRequest);
-    return this.toResponse(newUser);
+    const user = await this.authService.register(registerRequest);
+
+    return {
+      user: this.toResponse(user),
+      message:
+        'User created successfully. Please check your email for verification.',
+    };
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return await this.authService.verifyEmail(token);
   }
 
   @Post('login')
