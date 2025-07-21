@@ -39,6 +39,18 @@ export class User {
   @Column({ type: 'varchar', length: 50, default: 'America/Sao_Paulo' })
   timezone: string;
 
+  @Column({ type: 'boolean', default: false })
+  emailVerified: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  emailVerifiedAt: Date;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  emailVerificationToken: string;
+
+  @Column({ type: 'date', nullable: true })
+  emailVerificationExpiresAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
