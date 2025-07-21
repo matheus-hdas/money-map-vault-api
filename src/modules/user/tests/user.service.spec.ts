@@ -18,6 +18,10 @@ describe('UserService', () => {
     locale: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     defaultCurrency: 'BRL',
+    emailVerified: false,
+    emailVerifiedAt: null as any,
+    emailVerificationToken: 'verification-token-123',
+    emailVerificationExpiresAt: new Date('2023-01-02'),
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
   };
@@ -144,6 +148,69 @@ describe('UserService', () => {
       );
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { username },
+      });
+    });
+  });
+
+  describe('findByVerificationToken', () => {
+    it('should return user when found by verification token', async () => {
+      const token = 'verification-token-123';
+      mockRepository.findOne.mockResolvedValue(mockUser);
+
+      const result = await service.findByVerificationToken(token);
+
+      expect(result).toEqual(mockUser);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { emailVerificationToken: token },
+      });
+    });
+
+    it('should throw NotFoundException when user not found by verification token', async () => {
+      const token = 'invalid-token';
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findByVerificationToken(token)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { emailVerificationToken: token },
+      });
+    });
+
+    it('should handle empty token', async () => {
+      const token = '';
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findByVerificationToken(token)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { emailVerificationToken: token },
+      });
+    });
+
+    it('should handle null token', async () => {
+      const token: string = null as any;
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findByVerificationToken(token)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { emailVerificationToken: token },
+      });
+    });
+
+    it('should handle database errors', async () => {
+      const token = 'verification-token-123';
+      const dbError = new Error('Database connection failed');
+      mockRepository.findOne.mockRejectedValue(dbError);
+
+      await expect(service.findByVerificationToken(token)).rejects.toThrow(
+        dbError,
+      );
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { emailVerificationToken: token },
       });
     });
   });
