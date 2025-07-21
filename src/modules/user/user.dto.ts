@@ -18,6 +18,19 @@ export type UpdateUserRequest = {
   defaultCurrency?: string;
 };
 
+export type UpdateUserInternalRequest = {
+  username?: string;
+  email?: string;
+  password?: string;
+  locale?: string;
+  timezone?: string;
+  defaultCurrency?: string;
+  emailVerified?: boolean;
+  emailVerifiedAt?: Date;
+  emailVerificationToken?: string;
+  emailVerificationExpiresAt?: Date;
+};
+
 export type UserResponse = {
   id: string;
   username: string;
