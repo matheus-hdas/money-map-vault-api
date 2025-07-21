@@ -1,0 +1,37 @@
+{{#> layouts/base subject="Verificação de Email"}}
+    <h2>Bem-vindo(a), {{username}}! 🎉</h2>
+
+    <p>Obrigado por se cadastrar no <strong>MoneyMapVault</strong>!</p>
+
+    <p>Para completar seu cadastro e começar a organizar suas finanças, precisamos verificar seu email.</p>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{verificationUrl}}" class="btn">
+            ✅ Verificar Meu Email
+        </a>
+    </div>
+
+    <p>Ou copie e cole este link no seu navegador:</p>
+    <p style="word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 4px;">
+        {{verificationUrl}}
+    </p>
+
+    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 4px; margin: 20px 0;">
+        <p><strong>⚠️ Importante:</strong></p>
+        <ul>
+            <li>Este link expira em <strong>24 horas</strong></li>
+            <li>Não compartilhe este link com ninguém</li>
+            <li>Se você não se cadastrou, ignore este email</li>
+        </ul>
+    </div>
+
+    <p>Após verificar seu email, você poderá:</p>
+    <ul>
+        <li>💳 Adicionar suas contas bancárias</li>
+        <li>📊 Categorizar suas transações</li>
+        <li>🎯 Definir metas financeiras</li>
+        <li>📈 Acompanhar seu progresso</li>
+    </ul>
+
+    <p>Bem-vindo à jornada rumo ao controle financeiro!</p>
+{{/layouts/base}}
