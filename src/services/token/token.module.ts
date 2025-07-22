@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenService } from './token.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/modules/database/entities/user.entity';
+import { User } from '../../modules/database/entities/user.entity';
 
 @Module({
   imports: [

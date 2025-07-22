@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 type TokenPayload = {
   sub: string;
+  usr?: string;
   currency?: string;
   iss: string;
   type?: string;
@@ -38,13 +39,14 @@ export class TokenService {
     );
 
     const accessTokenPayload: TokenPayload = {
-      sub: user.username,
+      sub: user.id,
+      usr: user.username,
       iss: 'moneymapvault-api',
       currency: user.defaultCurrency,
     };
 
     const refreshTokenPayload: TokenPayload = {
-      sub: user.username,
+      sub: user.id,
       iss: 'moneymapvault-api',
       type: 'refresh',
     };
@@ -67,7 +69,7 @@ export class TokenService {
     }
 
     const user = await this.userRepository.findOne({
-      where: { username: decoded.sub },
+      where: { id: decoded.sub },
     });
 
     if (!user) {

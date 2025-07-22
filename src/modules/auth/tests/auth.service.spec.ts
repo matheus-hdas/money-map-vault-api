@@ -6,6 +6,8 @@ import { TokenService } from '../../../services/token/token.service';
 import { PasswordService } from '../../../services/password/password.service';
 import { LoginRequest, RegisterRequest } from '../auth.dto';
 import { User } from '../../database/entities/user.entity';
+import { MailService } from '../../../services/mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -19,6 +21,10 @@ describe('AuthService', () => {
     locale: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     defaultCurrency: 'BRL',
+    emailVerified: false,
+    emailVerifiedAt: null as any,
+    emailVerificationToken: 'verification-token-123',
+    emailVerificationExpiresAt: new Date('2023-01-02'),
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
   };
@@ -32,6 +38,8 @@ describe('AuthService', () => {
   const mockUserService = {
     findByEmail: jest.fn(),
     create: jest.fn(),
+    update: jest.fn(),
+    findByVerificationToken: jest.fn(),
   };
 
   const mockTokenService = {
@@ -41,6 +49,18 @@ describe('AuthService', () => {
 
   const mockPasswordService = {
     compare: jest.fn(),
+  };
+
+  const mockMailService = {
+    sendVerifyEmail: jest.fn(),
+    sendWelcomeEmail: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'SERVER_URL') return 'http://localhost:3000';
+      return undefined;
+    }),
   };
 
   beforeEach(async () => {
@@ -58,6 +78,14 @@ describe('AuthService', () => {
         {
           provide: PasswordService,
           useValue: mockPasswordService,
+        },
+        {
+          provide: MailService,
+          useValue: mockMailService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();

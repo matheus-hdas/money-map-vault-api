@@ -21,6 +21,10 @@ describe('UserController', () => {
     locale: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     defaultCurrency: 'BRL',
+    emailVerified: false,
+    emailVerifiedAt: null as any,
+    emailVerificationToken: 'verification-token-123',
+    emailVerificationExpiresAt: new Date('2023-01-02'),
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
   };

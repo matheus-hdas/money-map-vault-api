@@ -17,6 +17,10 @@ describe('TokenService', () => {
     locale: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     defaultCurrency: 'BRL',
+    emailVerified: false,
+    emailVerifiedAt: null as any,
+    emailVerificationToken: 'verification-token-123',
+    emailVerificationExpiresAt: new Date('2023-01-02'),
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
   };
@@ -77,7 +81,8 @@ describe('TokenService', () => {
 
       // Verificar chamada do access token
       expect(mockJwtService.sign).toHaveBeenNthCalledWith(1, {
-        sub: mockUser.username,
+        sub: mockUser.id,
+        usr: mockUser.username,
         iss: 'moneymapvault-api',
         currency: mockUser.defaultCurrency,
       });
@@ -86,7 +91,7 @@ describe('TokenService', () => {
       expect(mockJwtService.sign).toHaveBeenNthCalledWith(
         2,
         {
-          sub: mockUser.username,
+          sub: mockUser.id,
           iss: 'moneymapvault-api',
           type: 'refresh',
         },
@@ -124,7 +129,7 @@ describe('TokenService', () => {
     it('should refresh token successfully with valid refresh token', async () => {
       const mockRefreshToken = 'valid-refresh-token';
       const mockDecodedToken = {
-        sub: mockUser.username,
+        sub: mockUser.id,
         iss: 'moneymapvault-api',
         type: 'refresh',
         iat: Date.now(),
@@ -149,14 +154,14 @@ describe('TokenService', () => {
 
       expect(mockJwtService.verify).toHaveBeenCalledWith(mockRefreshToken);
       expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { username: mockUser.username },
+        where: { id: mockUser.id },
       });
     });
 
     it('should throw UnauthorizedException for invalid token type', async () => {
       const mockRefreshToken = 'invalid-token';
       const mockDecodedToken = {
-        sub: mockUser.username,
+        sub: mockUser.id,
         iss: 'moneymapvault-api',
         type: 'access', // Tipo inválido
         iat: Date.now(),
@@ -175,7 +180,7 @@ describe('TokenService', () => {
     it('should throw UnauthorizedException for missing token type', async () => {
       const mockRefreshToken = 'invalid-token';
       const mockDecodedToken = {
-        sub: mockUser.username,
+        sub: mockUser.id,
         iss: 'moneymapvault-api',
         // type ausente
         iat: Date.now(),
@@ -209,7 +214,7 @@ describe('TokenService', () => {
       ).rejects.toThrow(new UnauthorizedException('Invalid token user'));
 
       expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { username: 'nonexistent-user' },
+        where: { id: 'nonexistent-user' },
       });
     });
 
@@ -233,7 +238,8 @@ describe('TokenService', () => {
     it('should verify token successfully', () => {
       const mockToken = 'valid-token';
       const mockDecodedToken = {
-        sub: mockUser.username,
+        sub: mockUser.id,
+        usr: mockUser.username,
         iss: 'moneymapvault-api',
         currency: mockUser.defaultCurrency,
         iat: Date.now(),
@@ -278,7 +284,8 @@ describe('TokenService', () => {
       const mockAccessToken = 'generated-access-token';
       const mockRefreshToken = 'generated-refresh-token';
       const mockDecodedToken = {
-        sub: mockUser.username,
+        sub: mockUser.id,
+        usr: mockUser.username,
         iss: 'moneymapvault-api',
         currency: mockUser.defaultCurrency,
         iat: Date.now(),
@@ -306,7 +313,7 @@ describe('TokenService', () => {
       const mockNewAccessToken = 'new-access-token';
       const mockNewRefreshToken = 'new-refresh-token';
       const mockDecodedRefreshToken = {
-        sub: mockUser.username,
+        sub: mockUser.id,
         iss: 'moneymapvault-api',
         type: 'refresh',
         iat: Date.now(),

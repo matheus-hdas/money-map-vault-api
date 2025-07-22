@@ -10,7 +10,7 @@ import { TokenService } from '../../services/token/token.service';
 import { LoginRequest, RegisterRequest } from './auth.dto';
 import { PasswordService } from '../../services/password/password.service';
 import { User } from '../database/entities/user.entity';
-import { MailService } from 'src/services/mail/mail.service';
+import { MailService } from '../../services/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -163,7 +163,7 @@ export class AuthService {
       !decoded ||
       !decoded.sub ||
       decoded.exp < Date.now() / 1000 ||
-      decoded.iss !== this.apiUrl ||
+      decoded.iss !== 'moneymapvault-api' ||
       decoded.type
     ) {
       throw new UnauthorizedException('Token is invalid or expired');
