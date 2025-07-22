@@ -37,11 +37,11 @@ export class CreateGoalTable1752105347425 implements MigrationInterface {
                 "completedAt" date,
                 "createdAt" timestamp NOT NULL DEFAULT now(),
                 "updatedAt" timestamp NOT NULL DEFAULT now(),
-                "user_id" uuid NOT NULL,
-                "category_id" uuid,
+                "userId" uuid NOT NULL,
+                "categoryId" uuid,
                 CONSTRAINT "PK_goals" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_goals_user_id" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE,
-                CONSTRAINT "FK_goals_category_id" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE SET NULL
+                CONSTRAINT "FK_goals_userId" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE,
+                CONSTRAINT "FK_goals_categoryId" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE SET NULL
             )
         `);
   }

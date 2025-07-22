@@ -93,7 +93,7 @@ export class Goal {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.goals, { cascade: true })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ type: 'uuid' })
@@ -104,7 +104,7 @@ export class Goal {
     nullable: true,
     cascade: true,
   })
-  @JoinColumn({ name: 'category_id' })
+  @JoinColumn({ name: 'categoryId' })
   category?: Category;
 
   @Column({ type: 'uuid', nullable: true })

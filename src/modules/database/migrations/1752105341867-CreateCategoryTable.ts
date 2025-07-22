@@ -21,11 +21,11 @@ export class CreateCategoryTable1752105341867 implements MigrationInterface {
                 "sortOrder" integer NOT NULL DEFAULT 0,
                 "createdAt" timestamp NOT NULL DEFAULT now(),
                 "updatedAt" timestamp NOT NULL DEFAULT now(),
-                "parent_id" uuid,
-                "user_id" uuid,
+                "parentId" uuid,
+                "userId" uuid,
                 CONSTRAINT "PK_categories" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_categories_parent_id" FOREIGN KEY ("parent_id") REFERENCES "categories"("id") ON DELETE SET NULL,
-                CONSTRAINT "FK_categories_user_id" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE
+                CONSTRAINT "FK_categories_parentId" FOREIGN KEY ("parentId") REFERENCES "categories"("id") ON DELETE SET NULL,
+                CONSTRAINT "FK_categories_userId" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
             )
         `);
   }

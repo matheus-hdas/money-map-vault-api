@@ -25,9 +25,9 @@ export class CreateAccountTable1752105316020 implements MigrationInterface {
                 "includeInTotals" boolean NOT NULL DEFAULT true,
                 "createdAt" timestamp NOT NULL DEFAULT now(),
                 "updatedAt" timestamp NOT NULL DEFAULT now(),
-                "user_id" uuid NOT NULL,
+                "userId" uuid NOT NULL,
                 CONSTRAINT "PK_accounts" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_accounts_user_id" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE
+                CONSTRAINT "FK_accounts_userId" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
             )
         `);
   }

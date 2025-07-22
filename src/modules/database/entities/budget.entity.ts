@@ -84,7 +84,7 @@ export class Budget {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.budgets, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user?: User;
 
   @Column({ type: 'uuid' })
@@ -93,7 +93,7 @@ export class Budget {
   @ManyToOne(() => Category, (category) => category.budgets, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'category_id' })
+  @JoinColumn({ name: 'categoryId' })
   category?: Category;
 
   @Column({ type: 'uuid' })

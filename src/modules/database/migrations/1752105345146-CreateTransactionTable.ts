@@ -32,15 +32,15 @@ export class CreateTransactionTable1752105345146 implements MigrationInterface {
                 "recurringGroupId" uuid,
                 "createdAt" timestamp NOT NULL DEFAULT now(),
                 "updatedAt" timestamp NOT NULL DEFAULT now(),
-                "user_id" uuid NOT NULL,
-                "category_id" uuid,
-                "from_account_id" uuid,
-                "to_account_id" uuid,
+                "userId" uuid NOT NULL,
+                "categoryId" uuid,
+                "fromAccountId" uuid,
+                "toAccountId" uuid,
                 CONSTRAINT "PK_transactions" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_transactions_user_id" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE,
-                CONSTRAINT "FK_transactions_category_id" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE SET NULL,
-                CONSTRAINT "FK_transactions_from_account_id" FOREIGN KEY ("from_account_id") REFERENCES "accounts"("id") ON DELETE CASCADE,
-                CONSTRAINT "FK_transactions_to_account_id" FOREIGN KEY ("to_account_id") REFERENCES "accounts"("id") ON DELETE CASCADE
+                CONSTRAINT "FK_transactions_userId" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE,
+                CONSTRAINT "FK_transactions_categoryId" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE SET NULL,
+                CONSTRAINT "FK_transactions_fromAccountId" FOREIGN KEY ("fromAccountId") REFERENCES "accounts"("id") ON DELETE CASCADE,
+                CONSTRAINT "FK_transactions_toAccountId" FOREIGN KEY ("toAccountId") REFERENCES "accounts"("id") ON DELETE CASCADE
             )
         `);
   }

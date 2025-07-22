@@ -68,7 +68,7 @@ export class Account {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.accounts, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user?: User;
 
   @Column({ type: 'uuid' })

@@ -59,7 +59,7 @@ export class Category {
     nullable: true,
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'parent_id' })
+  @JoinColumn({ name: 'parentId' })
   parent?: Category;
 
   @Column({ type: 'uuid', nullable: true })
@@ -72,7 +72,7 @@ export class Category {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user?: User;
 
   @Column({ type: 'uuid', nullable: true })

@@ -15,7 +15,7 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
         `);
 
     await queryRunner.query(`
-            CREATE INDEX "IDX_accounts_user_id" ON "accounts" ("user_id")
+            CREATE INDEX "IDX_accounts_userId" ON "accounts" ("userId")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_accounts_type" ON "accounts" ("type")
@@ -24,11 +24,11 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
             CREATE INDEX "IDX_accounts_isActive" ON "accounts" ("isActive")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_accounts_user_type" ON "accounts" ("user_id", "type")
+            CREATE INDEX "IDX_accounts_userId_type" ON "accounts" ("userId", "type")
         `);
 
     await queryRunner.query(`
-            CREATE INDEX "IDX_categories_user_id" ON "categories" ("user_id")
+            CREATE INDEX "IDX_categories_userId" ON "categories" ("userId")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_categories_type" ON "categories" ("type")
@@ -40,26 +40,26 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
             CREATE INDEX "IDX_categories_isActive" ON "categories" ("isActive")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_categories_parent_id" ON "categories" ("parent_id")
+            CREATE INDEX "IDX_categories_parentId" ON "categories" ("parentId")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_categories_user_type" ON "categories" ("user_id", "type")
+            CREATE INDEX "IDX_categories_userId_type" ON "categories" ("userId", "type")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_categories_sortOrder" ON "categories" ("sortOrder")
         `);
 
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_user_id" ON "transactions" ("user_id")
+            CREATE INDEX "IDX_transactions_userId" ON "transactions" ("userId")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_category_id" ON "transactions" ("category_id")
+            CREATE INDEX "IDX_transactions_categoryId" ON "transactions" ("categoryId")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_from_account_id" ON "transactions" ("from_account_id")
+            CREATE INDEX "IDX_transactions_fromAccountId" ON "transactions" ("fromAccountId")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_to_account_id" ON "transactions" ("to_account_id")
+            CREATE INDEX "IDX_transactions_toAccountId" ON "transactions" ("toAccountId")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_transactions_type" ON "transactions" ("type")
@@ -74,13 +74,13 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
             CREATE INDEX "IDX_transactions_createdAt" ON "transactions" ("createdAt")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_user_date" ON "transactions" ("user_id", "date")
+            CREATE INDEX "IDX_transactions_userId_date" ON "transactions" ("userId", "date")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_user_type" ON "transactions" ("user_id", "type")
+            CREATE INDEX "IDX_transactions_userId_type" ON "transactions" ("userId", "type")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_transactions_user_category" ON "transactions" ("user_id", "category_id")
+            CREATE INDEX "IDX_transactions_userId_categoryId" ON "transactions" ("userId", "categoryId")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_transactions_date_desc" ON "transactions" ("date" DESC)
@@ -93,10 +93,10 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
         `);
 
     await queryRunner.query(`
-            CREATE INDEX "IDX_goals_user_id" ON "goals" ("user_id")
+            CREATE INDEX "IDX_goals_userId" ON "goals" ("userId")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_goals_category_id" ON "goals" ("category_id")
+            CREATE INDEX "IDX_goals_categoryId" ON "goals" ("categoryId")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_goals_type" ON "goals" ("type")
@@ -111,17 +111,17 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
             CREATE INDEX "IDX_goals_targetDate" ON "goals" ("targetDate")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_goals_user_status" ON "goals" ("user_id", "status")
+            CREATE INDEX "IDX_goals_userId_status" ON "goals" ("userId", "status")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_goals_user_type" ON "goals" ("user_id", "type")
+            CREATE INDEX "IDX_goals_userId_type" ON "goals" ("userId", "type")
         `);
 
     await queryRunner.query(`
-            CREATE INDEX "IDX_budgets_user_id" ON "budgets" ("user_id")
+            CREATE INDEX "IDX_budgets_userId" ON "budgets" ("userId")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_budgets_category_id" ON "budgets" ("category_id")
+            CREATE INDEX "IDX_budgets_categoryId" ON "budgets" ("categoryId")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_budgets_status" ON "budgets" ("status")
@@ -136,10 +136,10 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
             CREATE INDEX "IDX_budgets_endDate" ON "budgets" ("endDate")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_budgets_user_status" ON "budgets" ("user_id", "status")
+            CREATE INDEX "IDX_budgets_userId_status" ON "budgets" ("userId", "status")
         `);
     await queryRunner.query(`
-            CREATE INDEX "IDX_budgets_user_period" ON "budgets" ("user_id", "period")
+            CREATE INDEX "IDX_budgets_userId_period" ON "budgets" ("userId", "period")
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_budgets_date_range" ON "budgets" ("startDate", "endDate")
@@ -148,51 +148,51 @@ export class AddDatabaseIndexes1752114988825 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP INDEX "IDX_budgets_date_range"`);
-    await queryRunner.query(`DROP INDEX "IDX_budgets_user_period"`);
-    await queryRunner.query(`DROP INDEX "IDX_budgets_user_status"`);
+    await queryRunner.query(`DROP INDEX "IDX_budgets_userId_period"`);
+    await queryRunner.query(`DROP INDEX "IDX_budgets_userId_status"`);
     await queryRunner.query(`DROP INDEX "IDX_budgets_endDate"`);
     await queryRunner.query(`DROP INDEX "IDX_budgets_startDate"`);
     await queryRunner.query(`DROP INDEX "IDX_budgets_period"`);
     await queryRunner.query(`DROP INDEX "IDX_budgets_status"`);
-    await queryRunner.query(`DROP INDEX "IDX_budgets_category_id"`);
-    await queryRunner.query(`DROP INDEX "IDX_budgets_user_id"`);
+    await queryRunner.query(`DROP INDEX "IDX_budgets_categoryId"`);
+    await queryRunner.query(`DROP INDEX "IDX_budgets_userId"`);
 
-    await queryRunner.query(`DROP INDEX "IDX_goals_user_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_goals_user_status"`);
+    await queryRunner.query(`DROP INDEX "IDX_goals_userId_type"`);
+    await queryRunner.query(`DROP INDEX "IDX_goals_userId_status"`);
     await queryRunner.query(`DROP INDEX "IDX_goals_targetDate"`);
     await queryRunner.query(`DROP INDEX "IDX_goals_startDate"`);
     await queryRunner.query(`DROP INDEX "IDX_goals_status"`);
     await queryRunner.query(`DROP INDEX "IDX_goals_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_goals_category_id"`);
-    await queryRunner.query(`DROP INDEX "IDX_goals_user_id"`);
+    await queryRunner.query(`DROP INDEX "IDX_goals_categoryId"`);
+    await queryRunner.query(`DROP INDEX "IDX_goals_userId"`);
 
     await queryRunner.query(`DROP INDEX "IDX_transactions_recurringGroupId"`);
     await queryRunner.query(`DROP INDEX "IDX_transactions_isRecurring"`);
     await queryRunner.query(`DROP INDEX "IDX_transactions_date_desc"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_user_category"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_user_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_user_date"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_userId_categoryId"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_userId_type"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_userId_date"`);
     await queryRunner.query(`DROP INDEX "IDX_transactions_createdAt"`);
     await queryRunner.query(`DROP INDEX "IDX_transactions_date"`);
     await queryRunner.query(`DROP INDEX "IDX_transactions_status"`);
     await queryRunner.query(`DROP INDEX "IDX_transactions_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_to_account_id"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_from_account_id"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_category_id"`);
-    await queryRunner.query(`DROP INDEX "IDX_transactions_user_id"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_toAccountId"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_fromAccountId"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_categoryId"`);
+    await queryRunner.query(`DROP INDEX "IDX_transactions_userId"`);
 
     await queryRunner.query(`DROP INDEX "IDX_categories_sortOrder"`);
-    await queryRunner.query(`DROP INDEX "IDX_categories_user_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_categories_parent_id"`);
+    await queryRunner.query(`DROP INDEX "IDX_categories_userId_type"`);
+    await queryRunner.query(`DROP INDEX "IDX_categories_parentId"`);
     await queryRunner.query(`DROP INDEX "IDX_categories_isActive"`);
     await queryRunner.query(`DROP INDEX "IDX_categories_isSystem"`);
     await queryRunner.query(`DROP INDEX "IDX_categories_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_categories_user_id"`);
+    await queryRunner.query(`DROP INDEX "IDX_categories_userId"`);
 
-    await queryRunner.query(`DROP INDEX "IDX_accounts_user_type"`);
+    await queryRunner.query(`DROP INDEX "IDX_accounts_userId_type"`);
     await queryRunner.query(`DROP INDEX "IDX_accounts_isActive"`);
     await queryRunner.query(`DROP INDEX "IDX_accounts_type"`);
-    await queryRunner.query(`DROP INDEX "IDX_accounts_user_id"`);
+    await queryRunner.query(`DROP INDEX "IDX_accounts_userId"`);
 
     await queryRunner.query(`DROP INDEX "IDX_users_createdAt"`);
     await queryRunner.query(`DROP INDEX "IDX_users_email"`);

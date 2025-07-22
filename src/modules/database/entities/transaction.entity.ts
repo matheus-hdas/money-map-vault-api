@@ -85,7 +85,7 @@ export class Transaction {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.transactions, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user?: User;
 
   @Column({ type: 'uuid' })
@@ -95,7 +95,7 @@ export class Transaction {
     onDelete: 'SET NULL',
     nullable: true,
   })
-  @JoinColumn({ name: 'category_id' })
+  @JoinColumn({ name: 'categoryId' })
   category?: Category;
 
   @Column({ type: 'uuid', nullable: true })
@@ -105,7 +105,7 @@ export class Transaction {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  @JoinColumn({ name: 'from_account_id' })
+  @JoinColumn({ name: 'fromAccountId' })
   fromAccount?: Account;
 
   @Column({ type: 'uuid', nullable: true })
@@ -115,7 +115,7 @@ export class Transaction {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  @JoinColumn({ name: 'to_account_id' })
+  @JoinColumn({ name: 'toAccountId' })
   toAccount?: Account;
 
   @Column({ type: 'uuid', nullable: true })
