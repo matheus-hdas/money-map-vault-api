@@ -157,6 +157,18 @@ export class AuthService {
   }
 
   verifyToken(token: string) {
-    return this.tokenService.verifyToken(token);
+    const decoded = this.tokenService.verifyToken(token);
+
+    if (
+      !decoded ||
+      !decoded.sub ||
+      decoded.exp < Date.now() / 1000 ||
+      decoded.iss !== this.apiUrl ||
+      decoded.type
+    ) {
+      throw new UnauthorizedException('Token is invalid or expired');
+    }
+
+    return decoded;
   }
 }
