@@ -30,9 +30,17 @@ export class BalanceService {
 
   async calculateCurrentBalance(
     accountId: string,
+    userId?: string,
   ): Promise<BalanceCalculationResult> {
+    const whereCondition: any = { id: accountId };
+
+    if (userId) {
+      whereCondition.userId = userId;
+      whereCondition.isActive = true;
+    }
+
     const account = await this.accountRepository.findOne({
-      where: { id: accountId },
+      where: whereCondition,
     });
 
     if (!account) {
@@ -70,8 +78,11 @@ export class BalanceService {
     };
   }
 
-  async syncAccountBalance(accountId: string): Promise<void> {
-    const calculationResult = await this.calculateCurrentBalance(accountId);
+  async syncAccountBalance(accountId: string, userId: string): Promise<void> {
+    const calculationResult = await this.calculateCurrentBalance(
+      accountId,
+      userId,
+    );
 
     await this.accountRepository.update(accountId, {
       balance: calculationResult.finalBalance,
@@ -81,7 +92,17 @@ export class BalanceService {
   async getBalanceHistory(
     accountId: string,
     request: BalanceHistoryRequest,
+    userId: string,
   ): Promise<BalanceHistoryResponse> {
+    // Verificar ownership primeiro
+    const account = await this.accountRepository.findOne({
+      where: { id: accountId, userId, isActive: true },
+    });
+
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
+
     const { startDate, endDate } = this.convertPeriodToDates(
       request.period,
       request.startDate,
@@ -141,6 +162,7 @@ export class BalanceService {
   async getBalanceEvolution(
     accountId: string,
     days: number,
+    userId: string,
   ): Promise<BalanceEvolutionResponse> {
     const endDate = new Date();
     const startDate = new Date();
@@ -152,7 +174,11 @@ export class BalanceService {
       endDate: endDate.toISOString().split('T')[0],
     };
 
-    const history = await this.getBalanceHistory(accountId, historyRequest);
+    const history = await this.getBalanceHistory(
+      accountId,
+      historyRequest,
+      userId,
+    );
 
     const evolutionData: BalanceEvolutionItem[] = history.data.map(
       (item, index) => {
@@ -188,7 +214,7 @@ export class BalanceService {
     });
 
     for (const account of accounts) {
-      await this.syncAccountBalance(account.id);
+      await this.syncAccountBalance(account.id, userId);
     }
   }
 
@@ -201,7 +227,10 @@ export class BalanceService {
     let totalBalance = 0;
 
     for (const account of accounts) {
-      const calculationResult = await this.calculateCurrentBalance(account.id);
+      const calculationResult = await this.calculateCurrentBalance(
+        account.id,
+        userId,
+      );
 
       const summary: AccountBalanceSummary = {
         accountId: account.id,
@@ -228,8 +257,12 @@ export class BalanceService {
 
   async getCurrentBalanceResponse(
     accountId: string,
+    userId: string,
   ): Promise<CurrentBalanceResponse> {
-    const calculationResult = await this.calculateCurrentBalance(accountId);
+    const calculationResult = await this.calculateCurrentBalance(
+      accountId,
+      userId,
+    );
 
     return {
       accountId: calculationResult.accountId,

@@ -16,47 +16,50 @@ import {
   BalanceSummaryResponse,
 } from './balance.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import {
-  ResourceOwner,
-  ResourceOwnerGuard,
-} from 'src/common/guards/resource-owner.guard';
 import { AuthenticatedRequest } from 'src/common/types/request.type';
 
 @Controller('api/v1/balance')
-@UseGuards(AuthGuard, ResourceOwnerGuard)
-@ResourceOwner({ entity: 'account' })
+@UseGuards(AuthGuard)
 export class BalanceController {
   constructor(private readonly balanceService: BalanceService) {}
 
   @Get('accounts/:id/current')
   async getCurrentBalance(
     @Param('id') accountId: string,
+    @Req() req: AuthenticatedRequest,
   ): Promise<CurrentBalanceResponse> {
-    return this.balanceService.getCurrentBalanceResponse(accountId);
+    const userId = req.user.sub;
+    return this.balanceService.getCurrentBalanceResponse(accountId, userId);
   }
 
   @Get('accounts/:id/history')
   async getBalanceHistory(
     @Param('id') accountId: string,
     @Query() request: BalanceHistoryRequest,
+    @Req() req: AuthenticatedRequest,
   ): Promise<BalanceHistoryResponse> {
-    return this.balanceService.getBalanceHistory(accountId, request);
+    const userId = req.user.sub;
+    return this.balanceService.getBalanceHistory(accountId, request, userId);
   }
 
   @Get('accounts/:id/evolution')
   async getBalanceEvolution(
     @Param('id') accountId: string,
     @Query('days') days: number = 30,
+    @Req() req: AuthenticatedRequest,
   ): Promise<BalanceEvolutionResponse> {
-    return this.balanceService.getBalanceEvolution(accountId, days);
+    const userId = req.user.sub;
+    return this.balanceService.getBalanceEvolution(accountId, days, userId);
   }
 
   @Post('accounts/:id/recalculate')
   async recalculateBalance(
     @Param('id') accountId: string,
+    @Req() req: AuthenticatedRequest,
   ): Promise<CurrentBalanceResponse> {
-    await this.balanceService.syncAccountBalance(accountId);
-    return this.balanceService.getCurrentBalanceResponse(accountId);
+    const userId = req.user.sub;
+    await this.balanceService.syncAccountBalance(accountId, userId);
+    return this.balanceService.getCurrentBalanceResponse(accountId, userId);
   }
 
   @Get('summary')

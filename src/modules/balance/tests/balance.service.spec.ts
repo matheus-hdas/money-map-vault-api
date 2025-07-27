@@ -205,7 +205,7 @@ describe('BalanceService', () => {
         mockQueryBuilder,
       );
 
-      await service.syncAccountBalance('account-1');
+      await service.syncAccountBalance('account-1', 'user-1');
 
       expect(accountRepository.update).toHaveBeenCalledWith('account-1', {
         balance: 1300,
@@ -227,7 +227,10 @@ describe('BalanceService', () => {
         mockQueryBuilder,
       );
 
-      const result = await service.getCurrentBalanceResponse('account-1');
+      const result = await service.getCurrentBalanceResponse(
+        'account-1',
+        'user-1',
+      );
 
       expect(result).toEqual({
         accountId: 'account-1',
@@ -340,7 +343,11 @@ describe('BalanceService', () => {
         mockQueryBuilder,
       );
 
-      const result = await service.getBalanceHistory('account-1', mockRequest);
+      const result = await service.getBalanceHistory(
+        'account-1',
+        mockRequest,
+        'user-1',
+      );
 
       expect(result.accountId).toBe('account-1');
       expect(result.period).toBe('month');
@@ -366,7 +373,11 @@ describe('BalanceService', () => {
         mockQueryBuilder,
       );
 
-      const result = await service.getBalanceHistory('account-1', mockRequest);
+      const result = await service.getBalanceHistory(
+        'account-1',
+        mockRequest,
+        'user-1',
+      );
 
       expect(result.startDate).toBe('2024-01-01');
       expect(result.endDate).toBe('2024-01-31');
@@ -403,7 +414,11 @@ describe('BalanceService', () => {
       const spy = jest.spyOn(service, 'getBalanceHistory');
       spy.mockResolvedValue(mockHistoryData);
 
-      const result = await service.getBalanceEvolution('account-1', 7);
+      const result = await service.getBalanceEvolution(
+        'account-1',
+        7,
+        'user-1',
+      );
 
       expect(result.accountId).toBe('account-1');
       expect(result.period).toBe('7 days');
@@ -431,13 +446,15 @@ describe('BalanceService', () => {
       const balanceResult = await service.calculateCurrentBalance('account-1');
       expect(balanceResult.finalBalance).toBe(1300);
 
-      await service.syncAccountBalance('account-1');
+      await service.syncAccountBalance('account-1', 'user-1');
       expect(accountRepository.update).toHaveBeenCalledWith('account-1', {
         balance: 1300,
       });
 
-      const responseResult =
-        await service.getCurrentBalanceResponse('account-1');
+      const responseResult = await service.getCurrentBalanceResponse(
+        'account-1',
+        'user-1',
+      );
       expect(responseResult.balance).toBe(1300);
       expect(responseResult.accountId).toBe('account-1');
     });

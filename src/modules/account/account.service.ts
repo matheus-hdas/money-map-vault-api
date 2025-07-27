@@ -32,15 +32,9 @@ export class AccountService {
     return { accounts, total };
   }
 
-  async findById(id: string, userId?: string): Promise<Account> {
-    const whereCondition: any = { id, isActive: true };
-
-    if (userId) {
-      whereCondition.userId = userId;
-    }
-
+  async findById(id: string, userId: string): Promise<Account> {
     const account = await this.repository.findOne({
-      where: whereCondition,
+      where: { id, userId, isActive: true },
     });
 
     if (!account) {
@@ -74,7 +68,14 @@ export class AccountService {
     userId: string,
     accountData: UpdateAccountRequest,
   ): Promise<Account> {
-    const existingAccount = await this.findById(id, userId);
+    // Uma única consulta com verificação de ownership
+    const existingAccount = await this.repository.findOne({
+      where: { id, userId, isActive: true },
+    });
+
+    if (!existingAccount) {
+      throw new NotFoundException('Account not found');
+    }
 
     if (accountData.name && accountData.name !== existingAccount.name) {
       await this.validateUniqueAccountName(accountData.name, userId);
@@ -92,7 +93,14 @@ export class AccountService {
     id: string,
     userId: string,
   ): Promise<{ success: boolean; message: string }> {
-    const account = await this.findById(id, userId);
+    // Uma única consulta com verificação de ownership
+    const account = await this.repository.findOne({
+      where: { id, userId, isActive: true },
+    });
+
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
 
     const hasTransactions = await this.hasTransactions(id);
 
@@ -151,21 +159,44 @@ export class AccountService {
     userId: string,
     newBalance: number,
   ): Promise<Account> {
-    const account = await this.findById(id, userId);
-
-    account.balance = newBalance;
-    return await this.repository.save(account);
-  }
-
-  async updateBalanceFromCalculation(accountId: string): Promise<Account> {
-    await this.balanceService.syncAccountBalance(accountId);
-    const account = await this.repository.findOne({ where: { id: accountId } });
+    // Uma única consulta com verificação de ownership
+    const account = await this.repository.findOne({
+      where: { id, userId, isActive: true },
+    });
 
     if (!account) {
       throw new NotFoundException('Account not found');
     }
 
-    return account;
+    account.balance = newBalance;
+    return await this.repository.save(account);
+  }
+
+  async updateBalanceFromCalculation(
+    accountId: string,
+    userId: string,
+  ): Promise<Account> {
+    // Verificar ownership antes de atualizar
+    const account = await this.repository.findOne({
+      where: { id: accountId, userId, isActive: true },
+    });
+
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
+
+    await this.balanceService.syncAccountBalance(accountId, userId);
+
+    // Recarregar account após sincronização
+    const updatedAccount = await this.repository.findOne({
+      where: { id: accountId },
+    });
+
+    if (!updatedAccount) {
+      throw new NotFoundException('Account not found');
+    }
+
+    return updatedAccount;
   }
 
   private async validateUniqueAccountName(

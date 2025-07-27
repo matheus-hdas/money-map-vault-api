@@ -159,15 +159,16 @@ describe('AccountService', () => {
       });
     });
 
-    it('should return account when found without userId', async () => {
+    it('should return account when found with userId', async () => {
       const accountId = '1';
+      const userId = 'user-1';
       mockRepository.findOne.mockResolvedValue(mockAccount);
 
-      const result = await service.findById(accountId);
+      const result = await service.findById(accountId, userId);
 
       expect(result).toEqual(mockAccount);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
-        where: { id: accountId, isActive: true },
+        where: { id: accountId, userId, isActive: true },
       });
     });
 

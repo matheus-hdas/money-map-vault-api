@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
   Req,
-  ValidationPipe,
 } from '@nestjs/common';
 
 import { CategoryService } from './category.service';
@@ -22,22 +21,17 @@ import {
   CategoryHierarchyResponse,
 } from './category.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import {
-  ResourceOwner,
-  ResourceOwnerGuard,
-} from '../../common/guards/resource-owner.guard';
 import { AuthenticatedRequest } from '../../common/types/request.type';
 
 @Controller('api/v1/categories')
-@UseGuards(AuthGuard, ResourceOwnerGuard)
-@ResourceOwner({ entity: 'category' })
+@UseGuards(AuthGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
   async create(
     @Req() req: AuthenticatedRequest,
-    @Body(ValidationPipe) createCategoryRequest: CreateCategoryRequest,
+    @Body() createCategoryRequest: CreateCategoryRequest,
   ): Promise<CategoryResponse> {
     return this.categoryService.create(req.user.sub, createCategoryRequest);
   }
@@ -72,7 +66,7 @@ export class CategoryController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
-    @Body(ValidationPipe) updateCategoryRequest: UpdateCategoryRequest,
+    @Body() updateCategoryRequest: UpdateCategoryRequest,
   ): Promise<CategoryResponse> {
     const userId = req.user.sub;
     return this.categoryService.update(userId, id, updateCategoryRequest);

@@ -21,14 +21,9 @@ import {
 import { Account } from '../database/entities/account.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthenticatedRequest } from '../../common/types/request.type';
-import {
-  ResourceOwner,
-  ResourceOwnerGuard,
-} from '../../common/guards/resource-owner.guard';
 
 @Controller('api/v1/accounts')
-@UseGuards(AuthGuard, ResourceOwnerGuard)
-@ResourceOwner({ entity: 'account' })
+@UseGuards(AuthGuard)
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
@@ -56,8 +51,12 @@ export class AccountController {
   }
 
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<AccountResponse> {
-    const account = await this.accountService.findById(id);
+  async findById(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ): Promise<AccountResponse> {
+    const userId: string = req.user.sub;
+    const account = await this.accountService.findById(id, userId);
     return this.toResponse(account);
   }
 
