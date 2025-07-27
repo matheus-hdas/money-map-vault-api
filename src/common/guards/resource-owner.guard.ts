@@ -9,6 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account } from '../../modules/database/entities/account.entity';
+import { Category } from '../../modules/database/entities/category.entity';
 import { AuthenticatedRequest } from '../types/request.type';
 import { SetMetadata } from '@nestjs/common';
 
@@ -16,8 +17,8 @@ export const RESOURCE_OWNER_KEY = 'resourceOwner';
 
 export interface ResourceOwnerConfig {
   entity: 'account' | 'transaction' | 'category' | 'goal' | 'budget';
-  paramName?: string; // Default: 'id'
-  userIdField?: string; // Default: 'userId'
+  paramName?: string;
+  userIdField?: string;
 }
 
 export const ResourceOwner = (config: ResourceOwnerConfig) =>
@@ -29,7 +30,8 @@ export class ResourceOwnerGuard implements CanActivate {
     private reflector: Reflector,
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
-    // TODO: Inject outros repositories conforme necessário
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -39,7 +41,7 @@ export class ResourceOwnerGuard implements CanActivate {
     );
 
     if (!config) {
-      return true; // Sem configuração, permite acesso
+      return true;
     }
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
@@ -48,7 +50,6 @@ export class ResourceOwnerGuard implements CanActivate {
     const resourceId = request.params[paramName];
 
     if (!resourceId) {
-      // Se não tem resourceId, pula a verificação (ex: GET /accounts)
       return true;
     }
 
@@ -69,7 +70,23 @@ export class ResourceOwnerGuard implements CanActivate {
           select: ['userId', 'id'],
         });
         break;
-      // TODO: Adicionar outros casos conforme necessário
+      case 'category': {
+        const category = await this.categoryRepository.findOne({
+          where: { id: resourceId },
+          select: ['userId', 'id', 'isSystem'],
+        });
+
+        if (!category) {
+          throw new NotFoundException(`${entity} not found`);
+        }
+
+        if (category.isSystem) {
+          return true;
+        }
+
+        resource = category;
+        break;
+      }
       default:
         throw new ForbiddenException(`Unsupported entity: ${entity}`);
     }
