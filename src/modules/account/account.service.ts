@@ -11,12 +11,14 @@ import {
   UpdateAccountRequest,
   AccountSummaryResponse,
 } from './account.dto';
+import { BalanceService } from '../balance/balance.service';
 
 @Injectable()
 export class AccountService {
   constructor(
     @InjectRepository(Account)
     private readonly repository: Repository<Account>,
+    private readonly balanceService: BalanceService,
   ) {}
 
   async findAll(userId: string, page: number, limit: number) {
@@ -74,7 +76,6 @@ export class AccountService {
   ): Promise<Account> {
     const existingAccount = await this.findById(id, userId);
 
-    // Validar nome único se está sendo alterado
     if (accountData.name && accountData.name !== existingAccount.name) {
       await this.validateUniqueAccountName(accountData.name, userId);
     }
@@ -93,11 +94,9 @@ export class AccountService {
   ): Promise<{ success: boolean; message: string }> {
     const account = await this.findById(id, userId);
 
-    // Verificar se a conta tem transações
     const hasTransactions = await this.hasTransactions(id);
 
     if (hasTransactions) {
-      // Soft delete - apenas desativa a conta
       await this.repository.save({
         ...account,
         isActive: false,
@@ -109,7 +108,6 @@ export class AccountService {
           'Account deactivated successfully (has associated transactions)',
       };
     } else {
-      // Hard delete - remove completamente se não tem transações
       await this.repository.delete(id);
 
       return {
@@ -124,9 +122,7 @@ export class AccountService {
       where: { userId, isActive: true },
     });
 
-    const totalBalance = accounts
-      .filter((account) => account.includeInTotals)
-      .reduce((sum, account) => sum + Number(account.balance), 0);
+    const balanceSummary = await this.balanceService.getBalanceSummary(userId);
 
     const accountsByType = accounts.reduce(
       (acc, account) => {
@@ -136,7 +132,6 @@ export class AccountService {
       {} as { [key in AccountType]: number },
     );
 
-    // Garantir que todos os tipos estejam presentes
     Object.values(AccountType).forEach((type) => {
       if (!accountsByType[type]) {
         accountsByType[type] = 0;
@@ -145,7 +140,7 @@ export class AccountService {
 
     return {
       totalAccounts: accounts.length,
-      totalBalance,
+      totalBalance: balanceSummary.totalBalance,
       activeAccounts: accounts.filter((acc) => acc.isActive).length,
       accountsByType,
     };
@@ -160,6 +155,17 @@ export class AccountService {
 
     account.balance = newBalance;
     return await this.repository.save(account);
+  }
+
+  async updateBalanceFromCalculation(accountId: string): Promise<Account> {
+    await this.balanceService.syncAccountBalance(accountId);
+    const account = await this.repository.findOne({ where: { id: accountId } });
+
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
+
+    return account;
   }
 
   private async validateUniqueAccountName(
@@ -180,7 +186,6 @@ export class AccountService {
   }
 
   private async hasTransactions(accountId: string): Promise<boolean> {
-    // Query direta para verificar se existem transações
     const transactionCount = await this.repository.query(
       `
       SELECT COUNT(*) as count
