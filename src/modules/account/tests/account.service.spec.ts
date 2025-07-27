@@ -3,10 +3,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AccountService } from '../account.service';
 import { Account, AccountType } from '../../database/entities/account.entity';
+import { BalanceService } from '../../balance/balance.service';
 import { CreateAccountRequest, UpdateAccountRequest } from '../account.dto';
 
 describe('AccountService', () => {
   let service: AccountService;
+  let balanceService: jest.Mocked<BalanceService>;
 
   const mockAccount: Account = {
     id: '1',
@@ -48,10 +50,20 @@ describe('AccountService', () => {
           provide: getRepositoryToken(Account),
           useValue: mockRepository,
         },
+        {
+          provide: BalanceService,
+          useValue: {
+            getBalanceSummary: jest.fn(),
+            syncAccountBalance: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<AccountService>(AccountService);
+    balanceService = module.get<BalanceService>(
+      BalanceService,
+    ) as jest.Mocked<BalanceService>;
   });
 
   afterEach(() => {
@@ -471,11 +483,18 @@ describe('AccountService', () => {
 
       mockRepository.find.mockResolvedValue(accounts);
 
+      balanceService.getBalanceSummary.mockResolvedValue({
+        userId,
+        totalBalance: 3000,
+        accounts: [],
+        lastUpdatedAt: new Date(),
+      });
+
       const result = await service.getSummary(userId);
 
       expect(result).toEqual({
         totalAccounts: 3,
-        totalBalance: 3000, // Apenas contas com includeInTotals: true
+        totalBalance: 3000,
         activeAccounts: 3,
         accountsByType: {
           checking: 1,
@@ -494,6 +513,13 @@ describe('AccountService', () => {
     it('should return empty summary when no accounts', async () => {
       const userId = 'user-1';
       mockRepository.find.mockResolvedValue([]);
+
+      balanceService.getBalanceSummary.mockResolvedValue({
+        userId,
+        totalBalance: 0,
+        accounts: [],
+        lastUpdatedAt: new Date(),
+      });
 
       const result = await service.getSummary(userId);
 
